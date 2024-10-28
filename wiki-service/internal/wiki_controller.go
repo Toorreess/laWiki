@@ -1,17 +1,16 @@
 package internal
 
 import (
-	"firebase.google.com/go/auth"
 	"github.com/labstack/echo/v4"
 )
 
 type Context echo.Context
 
 type IWikiController interface {
-	Create(c Context, authClient *auth.Client) error
-	Read(c Context) error
-	Update(c Context, body map[string]interface{}, authClient *auth.Client) error
-	Delete(c Context, authClient *auth.Client) error
+	Create(c Context) error
+	Get(c Context) error
+	Update(c Context, body map[string]interface{}) error
+	Delete(c Context) error
 
 	List(c Context) error
 }
@@ -24,19 +23,19 @@ func NewWikiController(wi IWikiInteractor) IWikiController {
 	return &wikiController{wi}
 }
 
-func (w *wikiController) Create(c Context, authClient *auth.Client) error {
+func (w *wikiController) Create(c Context) error {
 	panic("unimplemented")
 }
 
-func (w *wikiController) Read(c Context) error {
+func (w *wikiController) Get(c Context) error {
 	panic("unimplemented")
 }
 
-func (w *wikiController) Update(c Context, body map[string]interface{}, authClient *auth.Client) error {
+func (w *wikiController) Update(c Context, body map[string]interface{}) error {
 	panic("unimplemented")
 }
 
-func (w *wikiController) Delete(c Context, authClient *auth.Client) error {
+func (w *wikiController) Delete(c Context) error {
 	panic("unimplemented")
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter(e *echo.Echo, wc IWikiController, authClient *auth.Client) *echo.Group {
+func NewRouter(e *echo.Echo, wc IWikiController, authClient *auth.Client) *echo.Echo {
 	api := e.Group("/api")
 
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -22,22 +22,22 @@ func NewRouter(e *echo.Echo, wc IWikiController, authClient *auth.Client) *echo.
 	})
 
 	api.POST("/wiki", func(c echo.Context) error {
-		return wc.Create(c, authClient)
+		return wc.Create(c)
 	})
 
 	api.PUT("/wiki/:id", func(c echo.Context) error {
 		obj := make(map[string]interface{})
 		c.Bind(&obj)
-		return wc.Update(c, obj, authClient)
+		return wc.Update(c, obj)
 	})
 
 	api.DELETE("/wiki/:id", func(c echo.Context) error {
-		return wc.Delete(c, authClient)
+		return wc.Delete(c)
 	})
 
 	api.GET("/wiki", func(c echo.Context) error {
 		return wc.List(c)
 	})
 
-	return api
+	return e
 }

@@ -1,17 +1,17 @@
 package internal
 
 import (
+	"github.com/Toorreess/laWiki/wiki-service/internal/database"
 	"github.com/Toorreess/laWiki/wiki-service/internal/model"
-	"github.com/Toorreess/laWiki/wiki-service/pkg/database"
 )
 
 type IWikiRepository interface {
 	Create(wm *model.Wiki) (map[string]interface{}, error)
-	Read(id string) (map[string]interface{}, error)
-	Update(id string, w map[string]interface{}) (map[string]interface{}, error)
+	Get(id string) (map[string]interface{}, error)
+	Update(id string, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(id string) error
 
-	List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
+	List(query string, limit, offset int) ([]map[string]interface{}, error)
 }
 
 type wikiRepository struct {
@@ -32,16 +32,16 @@ func (wr *wikiRepository) Create(wm *model.Wiki) (map[string]interface{}, error)
 	return wmr, nil
 }
 
-func (wr *wikiRepository) Read(id string) (map[string]interface{}, error) {
-	wmr, err := wr.db.Read(WIKI_INDEX_GAME, id)
+func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
+	wmr, err := wr.db.Client.(database.DBClient).Get(WIKI_INDEX_GAME, id, model.Wiki{})
 	if err != nil {
 		return nil, err
 	}
 	return wmr, nil
 }
 
-func (wr *wikiRepository) Update(id string, wm map[string]interface{}) (map[string]interface{}, error) {
-	wmr, err := wr.db.Update(WIKI_INDEX_GAME, id, wm)
+func (wr *wikiRepository) Update(id string, updates map[string]interface{}) (map[string]interface{}, error) {
+	wmr, err := wr.db.Update(WIKI_INDEX_GAME, id, updates)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +56,8 @@ func (wr *wikiRepository) Delete(id string) error {
 	return nil
 }
 
-func (wr *wikiRepository) List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
-	wmr, err := wr.db.List(WIKI_INDEX_GAME, query, limit, offset, orderBy, order, model.Wiki{})
+func (wr *wikiRepository) List(query string, limit, offset int) ([]map[string]interface{}, error) {
+	wmr, err := wr.db.List(WIKI_INDEX_GAME, query, limit, offset, model.Wiki{})
 	if err != nil {
 		return nil, err
 	}

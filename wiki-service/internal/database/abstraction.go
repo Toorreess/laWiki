@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Toorreess/laWiki/wiki-service/pkg/database/clients/firestore"
+	"github.com/Toorreess/laWiki/wiki-service/internal/database/clients/firestore"
 )
 
 type Connection struct {
@@ -14,11 +14,11 @@ type Connection struct {
 }
 
 type DBClient interface {
-	Get()
+	Get(index, id string, entity interface{}) (map[string]interface{}, error)
 	Create(index string, entity interface{}) (map[string]interface{}, error)
-	Update()
-	Delete()
-	List()
+	Update(index, id string, entity interface{}) (map[string]interface{}, error)
+	Delete(index, id string) error
+	List(index, query string, offset, limit int, entity interface{}) ([]map[string]interface{}, error)
 	Close() error
 }
 
@@ -38,6 +38,10 @@ func NewDBClient(dbType, user, passwd, addr, dbName string) (*Connection, error)
 	return &conn, nil
 }
 
+func (conn *Connection) Close() error {
+	return conn.Client.(DBClient).Close()
+}
+
 func (conn *Connection) Create(index string, entity interface{}) (map[string]interface{}, error) {
 	if conn.Client == nil {
 		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
@@ -45,18 +49,30 @@ func (conn *Connection) Create(index string, entity interface{}) (map[string]int
 	return conn.Client.(DBClient).Create(index, entity)
 }
 
-func (conn *Connection) Read(index string, id string) (map[string]interface{}, error) {
-	return nil, nil
+func (conn *Connection) Get(index string, id string, entity interface{}) (map[string]interface{}, error) {
+	if conn.Client == nil {
+		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
+	}
+	return conn.Client.(DBClient).Get(index, id, entity)
 }
 
 func (conn *Connection) Update(index, id string, entity interface{}) (map[string]interface{}, error) {
-	return nil, nil
+	if conn.Client == nil {
+		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
+	}
+	return conn.Client.(DBClient).Update(index, id, entity)
 }
 
 func (conn *Connection) Delete(index, id string) error {
-	return nil
+	if conn.Client == nil {
+		return fmt.Errorf("no client found. Please, init Connection before.")
+	}
+	return conn.Client.(DBClient).Delete(index, id)
 }
 
-func (conn *Connection) List(index, query string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
-	return nil, nil
+func (conn *Connection) List(index, query string, offset, limit int, entity interface{}) ([]map[string]interface{}, error) {
+	if conn.Client == nil {
+		return nil, fmt.Errorf("no client found. Please, init Connection before.")
+	}
+	return conn.Client.(DBClient).List(index, query, offset, limit, entity)
 }

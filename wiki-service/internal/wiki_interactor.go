@@ -4,11 +4,10 @@ import "github.com/Toorreess/laWiki/wiki-service/internal/model"
 
 type IWikiInteractor interface {
 	Create(wm *model.Wiki) (*model.Wiki, error)
-	Read(id string) (*model.Wiki, error)
-	Update(id string, w map[string]interface{}) (*model.Wiki, error)
+	Get(id string) (*model.Wiki, error)
+	Update(id string, updates map[string]interface{}) (*model.Wiki, error)
 	Delete(id string) error
-
-	List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
+	List(query string, limit, offset int) (map[string]interface{}, error)
 }
 
 type wikiInteractor struct {
@@ -31,18 +30,30 @@ func (wi *wikiInteractor) Create(wm *model.Wiki) (*model.Wiki, error) {
 	return wi.WikiPresenter.ResponseWiki(result), nil
 }
 
-func (wi *wikiInteractor) Read(id string) (*model.Wiki, error) {
-	panic("unimplemented")
+func (wi *wikiInteractor) Get(id string) (*model.Wiki, error) {
+	cm, err := wi.WikiRepository.Get(id)
+	if err != nil {
+		return nil, err
+	}
+	return wi.WikiPresenter.ResponseWiki(cm), nil
 }
 
-func (wi *wikiInteractor) Update(id string, w map[string]interface{}) (*model.Wiki, error) {
-	panic("unimplemented")
+func (wi *wikiInteractor) Update(id string, updates map[string]interface{}) (*model.Wiki, error) {
+	cm, err := wi.WikiRepository.Update(id, updates)
+	if err != nil {
+		return nil, err
+	}
+	return wi.WikiPresenter.ResponseWiki(cm), nil
 }
 
 func (wi *wikiInteractor) Delete(id string) error {
-	panic("unimplemented")
+	return wi.WikiRepository.Delete(id)
 }
 
-func (wi *wikiInteractor) List(query string, limit int, offset int, orderBy string, order string) ([]map[string]interface{}, error) {
-	panic("unimplemented")
+func (wi *wikiInteractor) List(query string, limit int, offset int) (map[string]interface{}, error) {
+	result, err := wi.WikiRepository.List(query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return wi.WikiPresenter.ResponseWikis(result, limit, offset), nil
 }
