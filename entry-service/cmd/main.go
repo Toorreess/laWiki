@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	wiki "github.com/Toorreess/laWiki/wiki-service/internal"
-	"github.com/Toorreess/laWiki/wiki-service/internal/config"
-	"github.com/Toorreess/laWiki/wiki-service/internal/database"
+	entry "github.com/Toorreess/laWiki/entry-service/internal"
+	"github.com/Toorreess/laWiki/entry-service/internal/config"
+	"github.com/Toorreess/laWiki/entry-service/internal/database"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,13 +18,9 @@ func main() {
 	}
 	defer db.Client.(database.DBClient).Close()
 
-	if err != nil {
-		log.Fatalf("error initializing app: %v\n", err)
-	}
-
-	wikiController := wiki.NewWikiController(wiki.NewWikiInteractor(wiki.NewWikiRepository(db), wiki.NewWikiPresenter()))
+	entryController := entry.NewEntryController(entry.NewEntryInteractor(entry.NewEntryRepository(db), entry.NewEntryPresenter()))
 	e := echo.New()
-	e = wiki.NewRouter(e, wikiController)
+	e = entry.NewRouter(e, entryController)
 
 	e.Logger.Fatal(e.Start(":1232"))
 }

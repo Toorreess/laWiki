@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter(e *echo.Echo, wc IWikiController) *echo.Echo {
+func NewRouter(e *echo.Echo, ic IEntryController) *echo.Echo {
 	api := e.Group("/api")
 
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -16,26 +16,26 @@ func NewRouter(e *echo.Echo, wc IWikiController) *echo.Echo {
 		ExposeHeaders:    []string{"*"},
 	}))
 
-	api.GET("/wiki/:id", func(c echo.Context) error {
-		return wc.Get(c)
+	api.GET("/entry/:id", func(c echo.Context) error {
+		return ic.Get(c)
 	})
 
-	api.POST("/wiki", func(c echo.Context) error {
-		return wc.Create(c)
+	api.POST("/entry", func(c echo.Context) error {
+		return ic.Create(c)
 	})
 
-	api.PUT("/wiki/:id", func(c echo.Context) error {
+	api.PUT("/entry/:id", func(c echo.Context) error {
 		obj := make(map[string]interface{})
 		c.Bind(&obj)
-		return wc.Update(c, obj)
+		return ic.Update(c, obj)
 	})
 
-	api.DELETE("/wiki/:id", func(c echo.Context) error {
-		return wc.Delete(c)
+	api.DELETE("/entry/:id", func(c echo.Context) error {
+		return ic.Delete(c)
 	})
 
-	api.GET("/wiki", func(c echo.Context) error {
-		return wc.List(c)
+	api.GET("/entry", func(c echo.Context) error {
+		return ic.List(c)
 	})
 
 	return e
