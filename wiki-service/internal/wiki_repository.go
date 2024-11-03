@@ -22,10 +22,10 @@ func NewWikiRepository(db *database.Connection) IWikiRepository {
 	return &wikiRepository{db: db}
 }
 
-const WIKI_INDEX_GAME = "Wiki"
+const WIKI_INDEX_NAME = "Wiki"
 
 func (wr *wikiRepository) Create(wm *model.Wiki) (map[string]interface{}, error) {
-	wmr, err := wr.db.Create(WIKI_INDEX_GAME, wm)
+	wmr, err := wr.db.Create(WIKI_INDEX_NAME, wm)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (wr *wikiRepository) Create(wm *model.Wiki) (map[string]interface{}, error)
 }
 
 func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
-	wmr, err := wr.db.Get(WIKI_INDEX_GAME, id, model.Wiki{})
+	wmr, err := wr.db.Get(WIKI_INDEX_NAME, id, model.Wiki{})
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
 }
 
 func (wr *wikiRepository) Update(id string, updates map[string]interface{}) (map[string]interface{}, error) {
-	wmr, err := wr.db.Update(WIKI_INDEX_GAME, id, model.Wiki{}, updates)
+	wmr, err := wr.db.Update(WIKI_INDEX_NAME, id, model.Wiki{}, updates)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (wr *wikiRepository) Update(id string, updates map[string]interface{}) (map
 }
 
 func (wr *wikiRepository) Delete(id string) error {
-	err := wr.db.Delete(WIKI_INDEX_GAME, id)
+	err := wr.db.Delete(WIKI_INDEX_NAME, id)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (wr *wikiRepository) Delete(id string) error {
 }
 
 func (wr *wikiRepository) List(query string, limit, offset int) ([]map[string]interface{}, error) {
-	wmr, err := wr.db.List(WIKI_INDEX_GAME, query, limit, offset, model.Wiki{})
+	wmr, err := wr.db.List(WIKI_INDEX_NAME, query, limit, offset, model.Wiki{})
 	if err != nil {
 		return nil, err
 	}

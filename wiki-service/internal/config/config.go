@@ -25,7 +25,7 @@ type Config struct {
 func ReadConfig() *Config {
 	c := Config{}
 	path, _ := os.Getwd()
-	err := godotenv.Load(fmt.Sprintf("%s/internal/config/.env", path))
+	err := godotenv.Load(fmt.Sprintf("%s/../.env", path))
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}

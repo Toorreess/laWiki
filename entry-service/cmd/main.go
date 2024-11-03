@@ -16,7 +16,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("error initializing DB Client: %v\n", err)
 	}
-	defer db.Client.(database.DBClient).Close()
+
+	defer db.Close()
 
 	entryController := entry.NewEntryController(entry.NewEntryInteractor(entry.NewEntryRepository(db), entry.NewEntryPresenter()))
 	e := echo.New()

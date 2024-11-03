@@ -25,7 +25,7 @@ func (c *Client) Init(ctx context.Context) error {
 	return nil
 }
 
-func (c *Client) Close() error {
+func (c Client) Close() error {
 	if c.Storage == nil {
 		return fmt.Errorf("no client found")
 	}
