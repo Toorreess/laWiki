@@ -7,7 +7,7 @@ type IEntryInteractor interface {
 	Get(id string) (*model.Entry, error)
 	Update(id string, updates map[string]interface{}) (*model.Entry, error)
 	Delete(id string) error
-	List(query string, limit, offset int) (map[string]interface{}, error)
+	List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
 }
 
 type entryInteractor struct {
@@ -50,8 +50,8 @@ func (wi *entryInteractor) Delete(id string) error {
 	return wi.EntryRepository.Delete(id)
 }
 
-func (wi *entryInteractor) List(query string, limit int, offset int) (map[string]interface{}, error) {
-	result, err := wi.EntryRepository.List(query, limit, offset)
+func (wi *entryInteractor) List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
+	result, err := wi.EntryRepository.List(query, limit, offset, orderBy, order)
 	if err != nil {
 		return nil, err
 	}

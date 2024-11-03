@@ -122,6 +122,10 @@ func (c Client) Delete(index, id string) error {
 }
 
 // TODO: Implement Firestore List
-func (c Client) List(index, query string, limit, offset int, entity interface{}) ([]map[string]interface{}, error) {
-	return nil, fmt.Errorf("not implemented")
+func (c Client) List(index, query string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
+	if c.Storage == nil {
+		return nil, fmt.Errorf("no client found.")
+	}
+
+	return nil, nil
 }
