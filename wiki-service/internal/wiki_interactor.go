@@ -1,13 +1,15 @@
 package internal
 
-import "github.com/Toorreess/laWiki/wiki-service/internal/model"
+import (
+	"github.com/Toorreess/laWiki/wiki-service/internal/model"
+)
 
 type IWikiInteractor interface {
 	Create(wm *model.Wiki) (*model.Wiki, error)
 	Get(id string) (*model.Wiki, error)
 	Update(id string, updates map[string]interface{}) (*model.Wiki, error)
 	Delete(id string) error
-	List(query string, limit, offset int) (map[string]interface{}, error)
+	List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
 }
 
 type wikiInteractor struct {
@@ -50,10 +52,11 @@ func (wi *wikiInteractor) Delete(id string) error {
 	return wi.WikiRepository.Delete(id)
 }
 
-func (wi *wikiInteractor) List(query string, limit int, offset int) (map[string]interface{}, error) {
+func (wi *wikiInteractor) List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
 	result, err := wi.WikiRepository.List(query, limit, offset)
 	if err != nil {
 		return nil, err
 	}
+
 	return wi.WikiPresenter.ResponseWikis(result, limit, offset), nil
 }
