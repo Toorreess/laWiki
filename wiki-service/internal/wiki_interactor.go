@@ -53,7 +53,7 @@ func (wi *wikiInteractor) Delete(id string) error {
 }
 
 func (wi *wikiInteractor) List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
-	result, err := wi.WikiRepository.List(query, limit, offset)
+	result, err := wi.WikiRepository.List(query, limit, offset, orderBy, order)
 	if err != nil {
 		return nil, err
 	}
