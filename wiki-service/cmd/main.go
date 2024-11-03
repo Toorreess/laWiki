@@ -16,11 +16,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("error initializing DB Client: %v\n", err)
 	}
-	defer db.Client.(database.DBClient).Close()
 
-	if err != nil {
-		log.Fatalf("error initializing app: %v\n", err)
-	}
+	defer db.Close()
 
 	wikiController := wiki.NewWikiController(wiki.NewWikiInteractor(wiki.NewWikiRepository(db), wiki.NewWikiPresenter()))
 	e := echo.New()

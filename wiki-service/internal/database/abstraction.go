@@ -16,7 +16,7 @@ type Connection struct {
 type DBClient interface {
 	Get(index, id string, entity interface{}) (map[string]interface{}, error)
 	Create(index string, entity interface{}) (map[string]interface{}, error)
-	Update(index, id string, entity interface{}) (map[string]interface{}, error)
+	Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(index, id string) error
 	List(index, query string, offset, limit int, entity interface{}) ([]map[string]interface{}, error)
 	Close() error
@@ -56,11 +56,11 @@ func (conn *Connection) Get(index string, id string, entity interface{}) (map[st
 	return conn.Client.(DBClient).Get(index, id, entity)
 }
 
-func (conn *Connection) Update(index, id string, entity interface{}) (map[string]interface{}, error) {
+func (conn *Connection) Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error) {
 	if conn.Client == nil {
 		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
 	}
-	return conn.Client.(DBClient).Update(index, id, entity)
+	return conn.Client.(DBClient).Update(index, id, entity, updates)
 }
 
 func (conn *Connection) Delete(index, id string) error {

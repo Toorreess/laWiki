@@ -33,7 +33,7 @@ func (wr *wikiRepository) Create(wm *model.Wiki) (map[string]interface{}, error)
 }
 
 func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
-	wmr, err := wr.db.Client.(database.DBClient).Get(WIKI_INDEX_GAME, id, model.Wiki{})
+	wmr, err := wr.db.Get(WIKI_INDEX_GAME, id, model.Wiki{})
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
 }
 
 func (wr *wikiRepository) Update(id string, updates map[string]interface{}) (map[string]interface{}, error) {
-	wmr, err := wr.db.Update(WIKI_INDEX_GAME, id, updates)
+	wmr, err := wr.db.Update(WIKI_INDEX_GAME, id, model.Wiki{}, updates)
 	if err != nil {
 		return nil, err
 	}

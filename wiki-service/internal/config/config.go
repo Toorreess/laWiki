@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -22,7 +24,11 @@ type Config struct {
 
 func ReadConfig() *Config {
 	c := Config{}
-	godotenv.Load("../../.env")
+	path, _ := os.Getwd()
+	err := godotenv.Load(fmt.Sprintf("%s/internal/config/.env", path))
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
 
 	c.Database.User = os.Getenv("DB_USER")
 	c.Database.Password = os.Getenv("DB_PASSWORD")
