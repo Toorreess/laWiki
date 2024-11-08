@@ -11,7 +11,7 @@ type IEntryRepository interface {
 	Update(id string, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(id string) error
 
-	List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
+	List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
 }
 
 type entryRepository struct {
@@ -56,7 +56,7 @@ func (er *entryRepository) Delete(id string) error {
 	return nil
 }
 
-func (er *entryRepository) List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
+func (er *entryRepository) List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
 	emr, err := er.db.List(ENTRY_INDEX_NAME, query, limit, offset, orderBy, order, model.Entry{})
 	if err != nil {
 		return nil, err

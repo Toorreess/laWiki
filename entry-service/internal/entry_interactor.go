@@ -3,11 +3,11 @@ package internal
 import "github.com/Toorreess/laWiki/entry-service/internal/model"
 
 type IEntryInteractor interface {
-	Create(wm *model.Entry) (*model.Entry, error)
+	Create(m *model.Entry) (*model.Entry, error)
 	Get(id string) (*model.Entry, error)
 	Update(id string, updates map[string]interface{}) (*model.Entry, error)
 	Delete(id string) error
-	List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
+	List(query map[string]string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
 }
 
 type entryInteractor struct {
@@ -22,38 +22,38 @@ func NewEntryInteractor(r IEntryRepository, p IEntryPresenter) IEntryInteractor 
 	}
 }
 
-func (wi *entryInteractor) Create(em *model.Entry) (*model.Entry, error) {
-	result, err := wi.EntryRepository.Create(em)
+func (ei *entryInteractor) Create(em *model.Entry) (*model.Entry, error) {
+	result, err := ei.EntryRepository.Create(em)
 	if err != nil {
 		return nil, err
 	}
-	return wi.EntryPresenter.ResponseEntry(result), nil
+	return ei.EntryPresenter.ResponseEntry(result), nil
 }
 
-func (wi *entryInteractor) Get(id string) (*model.Entry, error) {
-	cm, err := wi.EntryRepository.Get(id)
+func (ei *entryInteractor) Get(id string) (*model.Entry, error) {
+	em, err := ei.EntryRepository.Get(id)
 	if err != nil {
 		return nil, err
 	}
-	return wi.EntryPresenter.ResponseEntry(cm), nil
+	return ei.EntryPresenter.ResponseEntry(em), nil
 }
 
-func (wi *entryInteractor) Update(id string, updates map[string]interface{}) (*model.Entry, error) {
-	cm, err := wi.EntryRepository.Update(id, updates)
+func (ei *entryInteractor) Update(id string, updates map[string]interface{}) (*model.Entry, error) {
+	em, err := ei.EntryRepository.Update(id, updates)
 	if err != nil {
 		return nil, err
 	}
-	return wi.EntryPresenter.ResponseEntry(cm), nil
+	return ei.EntryPresenter.ResponseEntry(em), nil
 }
 
-func (wi *entryInteractor) Delete(id string) error {
-	return wi.EntryRepository.Delete(id)
+func (ei *entryInteractor) Delete(id string) error {
+	return ei.EntryRepository.Delete(id)
 }
 
-func (wi *entryInteractor) List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
-	result, err := wi.EntryRepository.List(query, limit, offset, orderBy, order)
+func (ei *entryInteractor) List(query map[string]string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
+	result, err := ei.EntryRepository.List(query, limit, offset, orderBy, order)
 	if err != nil {
 		return nil, err
 	}
-	return wi.EntryPresenter.ResponseEntries(result, limit, offset), nil
+	return ei.EntryPresenter.ResponseEntries(result, limit, offset), nil
 }
