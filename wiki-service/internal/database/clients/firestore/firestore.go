@@ -136,6 +136,8 @@ func (c Client) List(index string, query map[string]string, limit, offset int, o
 		}
 	}
 
+	q = q.Where("deleted", "==", false)
+
 	if orderBy != "" && order != "" {
 		var fbDirection firestore.Direction
 		if order == "ASC" {
