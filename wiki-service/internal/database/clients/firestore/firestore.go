@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/iterator"
 )
 
 type Client struct {
@@ -121,11 +122,58 @@ func (c Client) Delete(index, id string) error {
 	return nil
 }
 
-// TODO: Implement Firestore List
-func (c Client) List(index, query string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
+func (c Client) List(index string, query map[string]string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
 	if c.Storage == nil {
 		return nil, fmt.Errorf("no client found.")
 	}
 
-	return nil, nil
+	collection := c.Storage.Collection(index)
+	q := collection.Query
+
+	for k, v := range query {
+		if v != "" {
+			q = q.Where(k, ">=", v)
+		}
+	}
+
+	if orderBy != "" && order != "" {
+		var fbDirection firestore.Direction
+		if order == "ASC" {
+			fbDirection = firestore.Asc
+		} else {
+			fbDirection = firestore.Desc
+		}
+		q = q.OrderBy(orderBy, fbDirection)
+	}
+
+	q = q.Limit(limit)
+	q = q.Offset(offset)
+
+	iter := q.Documents(c.Ctx)
+	defer iter.Stop()
+
+	var results []map[string]interface{}
+	for {
+		docSnap, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		result := make(map[string]interface{})
+		if err := docSnap.DataTo(&result); err != nil {
+			return nil, err
+		}
+
+		result["id"] = docSnap.Ref.ID
+		result["modification_date"] = docSnap.UpdateTime
+		result["creation_date"] = docSnap.CreateTime
+
+		results = append(results, result)
+	}
+
+	return results, nil
 }
