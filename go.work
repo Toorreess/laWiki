@@ -3,6 +3,6 @@ go 1.23.2
 use (
 	./entry-service
 	./gateway-service
-	./user-service
 	./wiki-service
+	./comment-service
 )
