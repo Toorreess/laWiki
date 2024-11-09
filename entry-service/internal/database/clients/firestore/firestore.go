@@ -3,6 +3,7 @@ package firestore
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"encoding/json"
 
@@ -126,7 +127,7 @@ func (c Client) List(index string, query map[string]string, limit, offset int, o
 	if c.Storage == nil {
 		return nil, fmt.Errorf("no client found.")
 	}
-
+	log.Println(query)
 	collection := c.Storage.Collection(index)
 	q := collection.Query
 
