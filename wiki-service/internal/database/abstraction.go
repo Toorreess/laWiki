@@ -18,15 +18,15 @@ type DBClient interface {
 	Create(index string, entity interface{}) (map[string]interface{}, error)
 	Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(index, id string) error
-	List(index, query string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error)
+	List(index string, query map[string]string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error)
 	Close() error
 }
 
-func NewDBClient(dbType, user, passwd, addr, dbName string) (*Connection, error) {
+func NewDBClient(dbType, projectID string) (*Connection, error) {
 	var conn Connection
 	ctx := context.Background()
 	if dbType == "firestore" {
-		fsClient := firestore.Client{Project: addr}
+		fsClient := firestore.Client{Project: projectID}
 
 		if err := fsClient.Init(ctx); err != nil {
 			return nil, err
@@ -70,7 +70,7 @@ func (conn *Connection) Delete(index, id string) error {
 	return conn.Client.(DBClient).Delete(index, id)
 }
 
-func (conn *Connection) List(index, query string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
+func (conn *Connection) List(index string, query map[string]string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
 	if conn.Client == nil {
 		return nil, fmt.Errorf("no client found. Please, init Connection before.")
 	}

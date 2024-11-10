@@ -9,7 +9,7 @@ type IWikiInteractor interface {
 	Get(id string) (*model.Wiki, error)
 	Update(id string, updates map[string]interface{}) (*model.Wiki, error)
 	Delete(id string) error
-	List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
+	List(query map[string]string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
 }
 
 type wikiInteractor struct {
@@ -52,7 +52,7 @@ func (wi *wikiInteractor) Delete(id string) error {
 	return wi.WikiRepository.Delete(id)
 }
 
-func (wi *wikiInteractor) List(query string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
+func (wi *wikiInteractor) List(query map[string]string, limit, offset int, orderBy, order string) (map[string]interface{}, error) {
 	result, err := wi.WikiRepository.List(query, limit, offset, orderBy, order)
 	if err != nil {
 		return nil, err

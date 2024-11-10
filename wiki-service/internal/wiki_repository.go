@@ -11,7 +11,7 @@ type IWikiRepository interface {
 	Update(id string, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(id string) error
 
-	List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
+	List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
 }
 
 type wikiRepository struct {
@@ -56,7 +56,7 @@ func (wr *wikiRepository) Delete(id string) error {
 	return nil
 }
 
-func (wr *wikiRepository) List(query string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
+func (wr *wikiRepository) List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
 	wmr, err := wr.db.List(WIKI_INDEX_NAME, query, limit, offset, orderBy, order, model.Wiki{})
 	if err != nil {
 		return nil, err
