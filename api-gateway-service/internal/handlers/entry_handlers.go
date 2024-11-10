@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
-// var ENTRY_SERVICE_HOST = os.Getenv("ENTRY_SERVICE_HOST")
-var ENTRY_SERVICE_HOST = "http://localhost:1231/api/entry"
+var ENTRY_SERVICE_HOST = os.Getenv("ENTRY_SERVICE_HOST")
 
 func CreateEntry(c Context) error {
 	var payload *models.Entry

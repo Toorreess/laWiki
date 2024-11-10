@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
-// var COMMENT_SERVICE_HOST = os.Getenv("COMMENT_SERVICE_HOST")
-var COMMENT_SERVICE_HOST = "http://localhost:1231/api/entry"
+var COMMENT_SERVICE_HOST = os.Getenv("COMMENT_SERVICE_HOST")
 
 func CreateComment(c Context) error {
 	var payload *models.Comment

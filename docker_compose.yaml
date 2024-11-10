@@ -1,0 +1,21 @@
+services:
+  api-gateway-service:
+    build:
+      context: ./api-gateway-service
+    ports:
+      - 8080:8080
+  wiki-service:
+    build:
+      context: ./wiki-service
+    ports:
+      - 8081:8081
+  entry-service:
+    build:
+      context: ./entry-service
+    ports:
+      - 8082:8082
+  comment-service:
+    build:
+      context: ./comment-service
+    ports:
+      - 8083:8083

@@ -23,5 +23,5 @@ func main() {
 	e := echo.New()
 	e = entry.NewRouter(e, entryController)
 
-	e.Logger.Fatal(e.Start(":1232"))
+	e.Logger.Fatal(e.Start(cfg.Server.Port))
 }

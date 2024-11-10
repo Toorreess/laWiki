@@ -1,11 +1,11 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -15,22 +15,27 @@ type Config struct {
 	Server struct {
 		Port string
 	}
-	ProjectID string
+	ProjectID string `yml:"project_id"`
 }
 
 func ReadConfig() *Config {
 	c := Config{}
-	path, _ := os.Getwd()
-	err := godotenv.Load(fmt.Sprintf("%s/config/.env", path))
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+
+	viper.SetConfigName("config")
+	viper.SetConfigType("yml")
+	viper.AddConfigPath(filepath.Join("$GOPATH", "src", "entry-service", "config"))
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error loading envvars: %s", err)
 	}
 
-	c.Database.DBType = os.Getenv("DB_TYPE")
+	if err := viper.Unmarshal(&c); err != nil {
+		log.Fatalf("Error unmarshalling envvars: %v", err)
+	}
 
-	c.Server.Port = os.Getenv("SERVER_PORT")
-
-	c.ProjectID = os.Getenv("PROJECT_ID")
+	os.Setenv("PROJECT_ID", c.ProjectID)
 
 	return &c
+
 }

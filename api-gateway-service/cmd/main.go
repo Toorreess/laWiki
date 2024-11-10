@@ -12,5 +12,5 @@ func main() {
 	e := echo.New()
 	e = api.NewRouter(e)
 
-	e.Logger.Fatal(e.Start(cfg.ProjectID))
+	e.Logger.Fatal(e.Start(cfg.Server.Port))
 }

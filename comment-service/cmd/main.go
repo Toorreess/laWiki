@@ -23,5 +23,5 @@ func main() {
 	e := echo.New()
 	e = comment.NewRouter(e, commentController)
 
-	e.Logger.Fatal(e.Start(":1232"))
+	e.Logger.Fatal(e.Start(cfg.Server.Port))
 }

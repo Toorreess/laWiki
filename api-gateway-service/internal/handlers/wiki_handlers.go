@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/models"
 	"github.com/labstack/echo/v4"
@@ -12,10 +14,10 @@ import (
 
 type Context echo.Context
 
-// var WIKI_SERVICE_HOST = os.Getenv("WIKI_SERVICE_HOST")
-var WIKI_SERVICE_HOST = "http://localhost:1231/api/wiki"
+var WIKI_SERVICE_HOST string = os.Getenv("WIKI_SERVICE_HOST")
 
 func CreateWiki(c Context) error {
+	log.Printf("WIKI_SERVICE_HOST: %s", WIKI_SERVICE_HOST)
 	var payload *models.Wiki
 
 	if err := c.Bind(&payload); err != nil {
@@ -25,6 +27,7 @@ func CreateWiki(c Context) error {
 	jsonBytes, err := json.Marshal(payload)
 	req, err := http.NewRequest(http.MethodPost, WIKI_SERVICE_HOST, bytes.NewReader(jsonBytes))
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 
@@ -33,6 +36,7 @@ func CreateWiki(c Context) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 	defer resp.Body.Close()
@@ -45,16 +49,19 @@ func CreateWiki(c Context) error {
 }
 
 func GetWiki(c Context) error {
+	log.Printf("WIKI_SERVICE_HOST: %s", WIKI_SERVICE_HOST)
 	id := c.Param("id")
 
 	req, err := http.NewRequest(http.MethodGet, WIKI_SERVICE_HOST+"/"+id, nil)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrServiceUnavailable
 	}
 	defer resp.Body.Close()
@@ -77,6 +84,7 @@ func UpdateWiki(c Context) error {
 	jsonBytes, err := json.Marshal(payload)
 	req, err := http.NewRequest(http.MethodPut, WIKI_SERVICE_HOST+"/"+id, bytes.NewReader(jsonBytes))
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 
@@ -85,6 +93,7 @@ func UpdateWiki(c Context) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 	defer resp.Body.Close()
@@ -101,12 +110,14 @@ func DeleteWiki(c Context) error {
 
 	req, err := http.NewRequest(http.MethodDelete, WIKI_SERVICE_HOST+"/"+id, nil)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrServiceUnavailable
 	}
 	defer resp.Body.Close()
@@ -120,6 +131,7 @@ func DeleteWiki(c Context) error {
 func ListWiki(c Context) error {
 	req, err := http.NewRequest(http.MethodGet, WIKI_SERVICE_HOST, nil)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrInternalServerError
 	}
 
@@ -139,6 +151,7 @@ func ListWiki(c Context) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrServiceUnavailable
 	}
 	defer resp.Body.Close()
