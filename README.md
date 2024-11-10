@@ -14,7 +14,6 @@ Aplicación web de hosteo de wikis y entradas, desarrollado para la asignatura *
 ### Prerrequisitos
 - Tener instalado git
 - Tener instalado Docker
-- Tener instalado Docker Desktop
 - (opcional) Tener instalado Go 1.23.2
 
 ### Clonar el repositorio
