@@ -3,15 +3,17 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
-	"os"
 
+	"github.com/Toorreess/laWiki/api-gateway-service/config"
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
-var ENTRY_SERVICE_HOST = os.Getenv("ENTRY_SERVICE_HOST")
+var entryPort = config.ReadConfig().Server.CommentPort
+var ENTRY_SERVICE_HOST = fmt.Sprintf("http://entry-service%s/api/entry", entryPort)
 
 func CreateEntry(c Context) error {
 	var payload *models.Entry

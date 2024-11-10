@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -37,10 +36,6 @@ func ReadConfig() *Config {
 	}
 
 	os.Setenv("PROJECT_ID", c.ProjectID)
-	os.Setenv("WIKI_SERVICE_HOST", fmt.Sprintf("http://localhost%s/api/wiki", c.Server.WikiPort))
-	os.Setenv("ENTRY_SERVICE_HOST", fmt.Sprintf("http://localhost%s/api/entry", c.Server.EntryPort))
-	os.Setenv("COMMENT_SERVICE_HOST", fmt.Sprintf("http://localhost%s/api/comment", c.Server.CommentPort))
 
-	log.Printf(os.Getenv("WIKI_SERVICE_HOST"))
 	return &c
 }
