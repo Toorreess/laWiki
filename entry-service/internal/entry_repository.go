@@ -12,6 +12,8 @@ type IEntryRepository interface {
 	Delete(id string) error
 
 	List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
+
+	SetLatest(entry_id, version_id string) error
 }
 
 type entryRepository struct {
@@ -62,4 +64,8 @@ func (er *entryRepository) List(query map[string]string, limit, offset int, orde
 		return nil, err
 	}
 	return emr, nil
+}
+
+func (er *entryRepository) SetLatest(entry_id string, version_id string) error {
+	return er.db.SetLatest(ENTRY_INDEX_NAME, entry_id, version_id)
 }

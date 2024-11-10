@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/Toorreess/laWiki/api-gateway-service/config"
@@ -12,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var entryPort = config.ReadConfig().Server.CommentPort
+var entryPort = config.ReadConfig().Server.EntryPort
 var ENTRY_SERVICE_HOST = fmt.Sprintf("http://entry-service%s/api/entry", entryPort)
 
 func CreateEntry(c Context) error {
@@ -21,6 +22,8 @@ func CreateEntry(c Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
 	}
+
+	payload.WikiID = c.Param("wiki_id")
 
 	jsonBytes, err := json.Marshal(payload)
 	req, err := http.NewRequest(http.MethodPost, ENTRY_SERVICE_HOST, bytes.NewReader(jsonBytes))
@@ -55,6 +58,7 @@ func GetEntry(c Context) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println(err)
 		return echo.ErrServiceUnavailable
 	}
 	defer resp.Body.Close()

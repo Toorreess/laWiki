@@ -17,6 +17,8 @@ type IEntryController interface {
 	Delete(c Context) error
 
 	List(c Context) error
+
+	SetLatest(c Context) error
 }
 
 type entryController struct {
@@ -43,7 +45,6 @@ func (e *entryController) Create(c Context) error {
 
 func (e *entryController) Get(c Context) error {
 	id := c.Param("id")
-
 	em, err := e.EntryInteractor.Get(id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
@@ -109,4 +110,16 @@ func (e *entryController) List(c Context) error {
 	}
 
 	return c.JSON(http.StatusOK, list)
+}
+
+func (e *entryController) SetLatest(c Context) error {
+	entry_id := c.Param("id")
+	version_id := c.Param("version_id")
+
+	err := e.EntryInteractor.SetLatest(entry_id, version_id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }

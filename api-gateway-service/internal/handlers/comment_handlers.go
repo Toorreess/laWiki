@@ -22,6 +22,8 @@ func CreateComment(c Context) error {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
 	}
 
+	payload.EntryID = c.Param("entry_id")
+
 	jsonBytes, err := json.Marshal(payload)
 	req, err := http.NewRequest(http.MethodPost, COMMENT_SERVICE_HOST, bytes.NewReader(jsonBytes))
 	if err != nil {

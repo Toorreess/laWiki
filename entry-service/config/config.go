@@ -25,7 +25,6 @@ func ReadConfig() *Config {
 	viper.SetConfigType("yml")
 	viper.AddConfigPath(filepath.Join("$GOPATH", "src", "entry-service", "config"))
 	viper.AutomaticEnv()
-
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Error loading envvars: %s", err)
 	}
