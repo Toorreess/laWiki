@@ -3,15 +3,17 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
-	"os"
 
+	"github.com/Toorreess/laWiki/api-gateway-service/config"
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
-var COMMENT_SERVICE_HOST = os.Getenv("COMMENT_SERVICE_HOST")
+var commentPort = config.ReadConfig().Server.CommentPort
+var COMMENT_SERVICE_HOST = fmt.Sprintf("http://comment-service%s/api/comment", commentPort)
 
 func CreateComment(c Context) error {
 	var payload *models.Comment
@@ -19,6 +21,8 @@ func CreateComment(c Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
 	}
+
+	payload.EntryID = c.Param("entry_id")
 
 	jsonBytes, err := json.Marshal(payload)
 	req, err := http.NewRequest(http.MethodPost, COMMENT_SERVICE_HOST, bytes.NewReader(jsonBytes))

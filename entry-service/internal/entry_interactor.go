@@ -1,6 +1,8 @@
 package internal
 
-import "github.com/Toorreess/laWiki/entry-service/internal/model"
+import (
+	"github.com/Toorreess/laWiki/entry-service/internal/model"
+)
 
 type IEntryInteractor interface {
 	Create(m *model.Entry) (*model.Entry, error)
@@ -8,6 +10,8 @@ type IEntryInteractor interface {
 	Update(id string, updates map[string]interface{}) (*model.Entry, error)
 	Delete(id string) error
 	List(query map[string]string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
+
+	SetLatest(entry_id, version_id string) error
 }
 
 type entryInteractor struct {
@@ -27,6 +31,7 @@ func (ei *entryInteractor) Create(em *model.Entry) (*model.Entry, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return ei.EntryPresenter.ResponseEntry(result), nil
 }
 
@@ -56,4 +61,8 @@ func (ei *entryInteractor) List(query map[string]string, limit, offset int, orde
 		return nil, err
 	}
 	return ei.EntryPresenter.ResponseEntries(result, limit, offset), nil
+}
+
+func (ei *entryInteractor) SetLatest(entry_id, version_id string) error {
+	return ei.EntryRepository.SetLatest(entry_id, version_id)
 }

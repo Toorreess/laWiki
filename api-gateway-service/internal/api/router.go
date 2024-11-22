@@ -27,7 +27,7 @@ func NewRouter(e *echo.Echo) *echo.Echo {
 	})
 
 	/* Entry microservice endpoints */
-	v1.POST("/entry", func(c echo.Context) error {
+	v1.POST("/wiki/:wiki_id/entry", func(c echo.Context) error {
 		return handlers.CreateEntry(c)
 	})
 	v1.GET("/entry/:id", func(c echo.Context) error {
@@ -44,7 +44,7 @@ func NewRouter(e *echo.Echo) *echo.Echo {
 	})
 
 	/* Comment microservice endpoints */
-	v1.POST("/comment", func(c echo.Context) error {
+	v1.POST("/entry/:entry_id/comment", func(c echo.Context) error {
 		return handlers.CreateComment(c)
 	})
 	v1.GET("/comment/:id", func(c echo.Context) error {

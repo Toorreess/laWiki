@@ -3,21 +3,22 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
 
+	"github.com/Toorreess/laWiki/api-gateway-service/config"
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
 type Context echo.Context
 
-var WIKI_SERVICE_HOST string = os.Getenv("WIKI_SERVICE_HOST")
+var wikiPort = config.ReadConfig().Server.WikiPort
+var WIKI_SERVICE_HOST string = fmt.Sprintf("http://wiki-service%s/api/wiki", wikiPort)
 
 func CreateWiki(c Context) error {
-	log.Printf("WIKI_SERVICE_HOST: %s", WIKI_SERVICE_HOST)
 	var payload *models.Wiki
 
 	if err := c.Bind(&payload); err != nil {
@@ -49,7 +50,6 @@ func CreateWiki(c Context) error {
 }
 
 func GetWiki(c Context) error {
-	log.Printf("WIKI_SERVICE_HOST: %s", WIKI_SERVICE_HOST)
 	id := c.Param("id")
 
 	req, err := http.NewRequest(http.MethodGet, WIKI_SERVICE_HOST+"/"+id, nil)
