@@ -26,43 +26,6 @@ func (c *Client) Init(ctx context.Context) error {
 	return nil
 }
 
-func (c Client) Close() error {
-	if c.Storage == nil {
-		return fmt.Errorf("no client found")
-	}
-	return c.Storage.Close()
-}
-
-func (c Client) Get(index, id string, entity interface{}) (map[string]interface{}, error) {
-	if c.Storage == nil {
-		return nil, fmt.Errorf("no client found.")
-	}
-
-	collection := c.Storage.Collection(index)
-	doc := collection.Doc(id)
-	docsnap, err := doc.Get(c.Ctx)
-
-	if err != nil {
-		return nil, err
-	}
-	result := make(map[string]interface{})
-	if err := docsnap.DataTo(&result); err != nil {
-		return nil, err
-	}
-	result["id"] = id
-
-	if _, ok := result["creation_date"]; !ok {
-		result["creation_date"] = docsnap.CreateTime
-	}
-	if _, ok := result["modification_date"]; !ok {
-		result["modification_date"] = docsnap.UpdateTime
-	}
-	if result["deleted"].(bool) {
-		return nil, fmt.Errorf("not found")
-	}
-	return result, nil
-}
-
 func (c Client) Create(index string, entity interface{}) (map[string]interface{}, error) {
 	if c.Storage == nil {
 		return nil, fmt.Errorf("no client found.")
@@ -90,6 +53,40 @@ func (c Client) Create(index string, entity interface{}) (map[string]interface{}
 	return result, nil
 }
 
+func (c Client) Get(index, id string) (map[string]interface{}, error) {
+	if c.Storage == nil {
+		return nil, fmt.Errorf("no client found.")
+	}
+
+	collection := c.Storage.Collection(index)
+	doc := collection.Doc(id)
+	docsnap, err := doc.Get(c.Ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]interface{})
+	if err := docsnap.DataTo(&result); err != nil {
+		return nil, err
+	}
+
+	if result["deleted"].(bool) {
+		return nil, fmt.Errorf("not found")
+	}
+
+	result["id"] = id
+
+	if _, ok := result["creation_date"]; !ok {
+		result["creation_date"] = docsnap.CreateTime
+	}
+	if _, ok := result["modification_date"]; !ok {
+		result["modification_date"] = docsnap.UpdateTime
+	}
+
+	return result, nil
+}
+
 func (c Client) Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error) {
 	if c.Storage == nil {
 		return nil, fmt.Errorf("no client found.")
@@ -97,16 +94,20 @@ func (c Client) Update(index, id string, entity interface{}, updates map[string]
 
 	collection := c.Storage.Collection(index)
 	doc := collection.Doc(id)
+
 	var fsUpdates []firestore.Update
 	for k, v := range updates {
-		fsUpdates = append(fsUpdates, firestore.Update{Path: k, Value: v})
+		fsUpdates = append(fsUpdates, firestore.Update{
+			Path: k, Value: v, // TODO: Revisar
+		})
 	}
 
 	_, err := doc.Update(c.Ctx, fsUpdates)
 	if err != nil {
 		return nil, err
 	}
-	return c.Get(index, id, entity)
+
+	return c.Get(index, id)
 }
 
 func (c Client) Delete(index, id string) error {
@@ -116,9 +117,11 @@ func (c Client) Delete(index, id string) error {
 
 	collection := c.Storage.Collection(index)
 	doc := collection.Doc(id)
+
 	if _, err := doc.Update(c.Ctx, []firestore.Update{{Path: "deleted", Value: true}}); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -130,13 +133,14 @@ func (c Client) List(index string, query map[string]string, limit, offset int, o
 	collection := c.Storage.Collection(index)
 	q := collection.Query
 
+	q = q.Where("deleted", "==", false)
+
 	for k, v := range query {
 		if v != "" {
-			q = q.Where(k, ">=", v)
+			// q = q.Where(k, "==", v)
+			q = q.StartAt(v).EndAt(k + `\uf8ff`) // TODO: Revisar
 		}
 	}
-
-	q = q.Where("deleted", "==", false)
 
 	if orderBy != "" && order != "" {
 		var fbDirection firestore.Direction
@@ -178,4 +182,11 @@ func (c Client) List(index string, query map[string]string, limit, offset int, o
 	}
 
 	return results, nil
+}
+
+func (c Client) Close() error {
+	if c.Storage == nil {
+		return fmt.Errorf("no client found")
+	}
+	return c.Storage.Close()
 }

@@ -10,7 +10,6 @@ type IWikiRepository interface {
 	Get(id string) (map[string]interface{}, error)
 	Update(id string, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(id string) error
-
 	List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
 }
 
@@ -22,7 +21,7 @@ func NewWikiRepository(db *database.Connection) IWikiRepository {
 	return &wikiRepository{db: db}
 }
 
-const WIKI_INDEX_NAME = "Wiki"
+const WIKI_INDEX_NAME = "Wiki_v2"
 
 func (wr *wikiRepository) Create(wm *model.Wiki) (map[string]interface{}, error) {
 	wmr, err := wr.db.Create(WIKI_INDEX_NAME, wm)
