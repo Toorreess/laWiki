@@ -55,6 +55,10 @@ func (w *wikiController) Get(c Context) error {
 func (w *wikiController) Update(c Context, body map[string]interface{}) error {
 	var wm *model.Wiki
 
+	if _, ok := body["id"]; ok {
+		delete(body, "id")
+	}
+
 	wm, err := w.WikiInteractor.Update(c.Param("id"), body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})

@@ -4,14 +4,14 @@ import "time"
 
 type Wiki struct {
 	ID          string `json:"id" firestore:"-"`
-	Name        string `json:"name" firestore:"name"`
-	Creator     string `json:"creator" firestore:"creator"`
-	Description string `json:"description" firestore:"description"`
+	Name        string `json:"name" firestore:"name" binding:"required" updateAllowed:"true"`
+	Creator     string `json:"creator" firestore:"creator" binding:"required"`
+	Description string `json:"description" firestore:"description" updateAllowed:"true"`
 
 	// Deleted is used for logical deletion
 	Deleted bool `json:"-" firestore:"deleted"`
 
-	// Firestore document metadata
+	// Firestore Document metadata
 	CreationDate     time.Time `json:"creation_date" firestore:"-"`
 	ModificationDate time.Time `json:"modification_date" firestore:"-"`
 }

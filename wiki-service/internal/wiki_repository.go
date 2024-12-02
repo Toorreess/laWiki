@@ -32,7 +32,7 @@ func (wr *wikiRepository) Create(wm *model.Wiki) (map[string]interface{}, error)
 }
 
 func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
-	wmr, err := wr.db.Get(WIKI_INDEX_NAME, id, model.Wiki{})
+	wmr, err := wr.db.Get(WIKI_INDEX_NAME, id)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (wr *wikiRepository) Get(id string) (map[string]interface{}, error) {
 }
 
 func (wr *wikiRepository) Update(id string, updates map[string]interface{}) (map[string]interface{}, error) {
-	wmr, err := wr.db.Update(WIKI_INDEX_NAME, id, model.Wiki{}, updates)
+	wmr, err := wr.db.Update(WIKI_INDEX_NAME, id, updates)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (wr *wikiRepository) Delete(id string) error {
 }
 
 func (wr *wikiRepository) List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
-	wmr, err := wr.db.List(WIKI_INDEX_NAME, query, limit, offset, orderBy, order, model.Wiki{})
+	wmr, err := wr.db.List(WIKI_INDEX_NAME, query, limit, offset, orderBy, order)
 	if err != nil {
 		return nil, err
 	}

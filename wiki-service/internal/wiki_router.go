@@ -16,25 +16,25 @@ func NewRouter(e *echo.Echo, wc IWikiController) *echo.Echo {
 		ExposeHeaders:    []string{"*"},
 	}))
 
-	api.GET("/wiki/:id", func(c echo.Context) error {
+	api.GET("/wikis/:id", func(c echo.Context) error {
 		return wc.Get(c)
 	})
 
-	api.POST("/wiki", func(c echo.Context) error {
+	api.POST("/wikis", func(c echo.Context) error {
 		return wc.Create(c)
 	})
 
-	api.PUT("/wiki/:id", func(c echo.Context) error {
+	api.PUT("/wikis/:id", func(c echo.Context) error {
 		obj := make(map[string]interface{})
 		c.Bind(&obj)
 		return wc.Update(c, obj)
 	})
 
-	api.DELETE("/wiki/:id", func(c echo.Context) error {
+	api.DELETE("/wikis/:id", func(c echo.Context) error {
 		return wc.Delete(c)
 	})
 
-	api.GET("/wiki", func(c echo.Context) error {
+	api.GET("/wikis", func(c echo.Context) error {
 		return wc.List(c)
 	})
 

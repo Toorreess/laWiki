@@ -87,7 +87,7 @@ func (c Client) Get(index, id string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-func (c Client) Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error) {
+func (c Client) Update(index, id string, updates map[string]interface{}) (map[string]interface{}, error) {
 	if c.Storage == nil {
 		return nil, fmt.Errorf("no client found.")
 	}
@@ -125,7 +125,7 @@ func (c Client) Delete(index, id string) error {
 	return nil
 }
 
-func (c Client) List(index string, query map[string]string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
+func (c Client) List(index string, query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
 	if c.Storage == nil {
 		return nil, fmt.Errorf("no client found.")
 	}

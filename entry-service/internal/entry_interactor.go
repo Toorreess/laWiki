@@ -1,17 +1,18 @@
 package internal
 
 import (
+	"mime/multipart"
+
+	"firebase.google.com/go/v4/storage"
 	"github.com/Toorreess/laWiki/entry-service/internal/model"
 )
 
 type IEntryInteractor interface {
-	Create(m *model.Entry) (*model.Entry, error)
+	Create(entryData map[string]string, file multipart.File, storageClient *storage.Client) (*model.Entry, error)
 	Get(id string) (*model.Entry, error)
 	Update(id string, updates map[string]interface{}) (*model.Entry, error)
 	Delete(id string) error
 	List(query map[string]string, limit, offset int, orderBy, order string) (map[string]interface{}, error)
-
-	SetLatest(entry_id, version_id string) error
 }
 
 type entryInteractor struct {
@@ -26,7 +27,9 @@ func NewEntryInteractor(r IEntryRepository, p IEntryPresenter) IEntryInteractor 
 	}
 }
 
-func (ei *entryInteractor) Create(em *model.Entry) (*model.Entry, error) {
+func (ei *entryInteractor) Create(entryData map[string]string, file multipart.File, storageClient *storage.Client) (*model.Entry, error) {
+	var em *model.Entry
+
 	result, err := ei.EntryRepository.Create(em)
 	if err != nil {
 		return nil, err
@@ -61,8 +64,4 @@ func (ei *entryInteractor) List(query map[string]string, limit, offset int, orde
 		return nil, err
 	}
 	return ei.EntryPresenter.ResponseEntries(result, limit, offset), nil
-}
-
-func (ei *entryInteractor) SetLatest(entry_id, version_id string) error {
-	return ei.EntryRepository.SetLatest(entry_id, version_id)
 }

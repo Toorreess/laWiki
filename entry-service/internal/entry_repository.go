@@ -12,8 +12,6 @@ type IEntryRepository interface {
 	Delete(id string) error
 
 	List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
-
-	SetLatest(entry_id, version_id string) error
 }
 
 type entryRepository struct {
@@ -24,7 +22,8 @@ func NewEntryRepository(db *database.Connection) IEntryRepository {
 	return &entryRepository{db: db}
 }
 
-const ENTRY_INDEX_NAME = "Entry"
+const ENTRY_INDEX_NAME = "Entry_v2"
+const VERSION_INDEX_NAME = "VCS"
 
 func (er *entryRepository) Create(wm *model.Entry) (map[string]interface{}, error) {
 	emr, err := er.db.Create(ENTRY_INDEX_NAME, wm)
@@ -35,7 +34,7 @@ func (er *entryRepository) Create(wm *model.Entry) (map[string]interface{}, erro
 }
 
 func (er *entryRepository) Get(id string) (map[string]interface{}, error) {
-	emr, err := er.db.Client.(database.DBClient).Get(ENTRY_INDEX_NAME, id, model.Entry{})
+	emr, err := er.db.Client.(database.DBClient).Get(ENTRY_INDEX_NAME, id)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +42,7 @@ func (er *entryRepository) Get(id string) (map[string]interface{}, error) {
 }
 
 func (er *entryRepository) Update(id string, updates map[string]interface{}) (map[string]interface{}, error) {
-	emr, err := er.db.Update(ENTRY_INDEX_NAME, id, model.Entry{}, updates)
+	emr, err := er.db.Update(ENTRY_INDEX_NAME, id, updates)
 	if err != nil {
 		return nil, err
 	}
@@ -59,13 +58,9 @@ func (er *entryRepository) Delete(id string) error {
 }
 
 func (er *entryRepository) List(query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
-	emr, err := er.db.List(ENTRY_INDEX_NAME, query, limit, offset, orderBy, order, model.Entry{})
+	emr, err := er.db.List(ENTRY_INDEX_NAME, query, limit, offset, orderBy, order)
 	if err != nil {
 		return nil, err
 	}
 	return emr, nil
-}
-
-func (er *entryRepository) SetLatest(entry_id string, version_id string) error {
-	return er.db.SetLatest(ENTRY_INDEX_NAME, entry_id, version_id)
 }

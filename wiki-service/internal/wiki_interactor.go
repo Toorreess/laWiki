@@ -42,6 +42,7 @@ func (wi *wikiInteractor) Get(id string) (*model.Wiki, error) {
 
 func (wi *wikiInteractor) Update(id string, updates map[string]interface{}) (*model.Wiki, error) {
 	cm, err := wi.WikiRepository.Update(id, updates)
+
 	if err != nil {
 		return nil, err
 	}

@@ -4,21 +4,19 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Toorreess/laWiki/entry-service/internal/model"
+	"firebase.google.com/go/v4/storage"
 	"github.com/labstack/echo/v4"
 )
 
 type Context echo.Context
 
 type IEntryController interface {
-	Create(c Context) error
+	Create(c Context, storageClient *storage.Client) error
 	Get(c Context) error
 	Update(c Context, body map[string]interface{}) error
 	Delete(c Context) error
 
 	List(c Context) error
-
-	SetLatest(c Context) error
 }
 
 type entryController struct {
@@ -29,39 +27,38 @@ func NewEntryController(ei IEntryInteractor) IEntryController {
 	return &entryController{ei}
 }
 
-func (e *entryController) Create(c Context) error {
-	var em *model.Entry
-	if err := c.Bind(&em); err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
+func (e *entryController) Create(c Context, storageClient *storage.Client) error {
+	r := c.Request()
+
+	r.ParseMultipartForm(10 << 20) // 10 MB limit
+
+	entryData := map[string]string{
+		"name":    r.FormValue("name"),
+		"author":  r.FormValue("author"),
+		"wiki_id": r.FormValue("wiki_id"),
 	}
 
-	em, err := e.EntryInteractor.Create(em)
+	file, _, err := r.FormFile("content")
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "File uploaded invalid"})
 	}
 
-	return c.JSON(http.StatusOK, em)
+	defer file.Close()
+
+	resp, err := e.EntryInteractor.Create(entryData, file, storageClient)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "File uploaded invalid"})
+	}
+
+	return c.JSON(http.StatusCreated, resp)
 }
 
 func (e *entryController) Get(c Context) error {
-	id := c.Param("id")
-	em, err := e.EntryInteractor.Get(id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
-	}
-
-	return c.JSON(http.StatusOK, em)
+	panic("unimplemented")
 }
 
 func (e *entryController) Update(c Context, body map[string]interface{}) error {
-	var em *model.Entry
-
-	em, err := e.EntryInteractor.Update(c.Param("id"), body)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
-	}
-
-	return c.JSON(http.StatusOK, em)
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (e *entryController) Delete(c Context) error {
@@ -77,14 +74,24 @@ func (e *entryController) Delete(c Context) error {
 func (e *entryController) List(c Context) error {
 	query := c.QueryParams()
 
-	q := make(map[string]string)
+	var limitStr, offsetStr, orderBy, order string
+
+	filteredQueryParams := make(map[string]string)
 	for k, v := range query {
-		if k != "limit" && k != "offset" && k != "orderBy" && k != "order" {
-			q[k] = v[0]
+		switch k {
+		case "limit":
+			limitStr = v[0]
+		case "offset":
+			offsetStr = v[0]
+		case "orderBy":
+			orderBy = v[0]
+		case "order":
+			order = v[0]
+		default:
+			filteredQueryParams[k] = v[0]
 		}
 	}
 
-	limitStr := query.Get("limit")
 	if limitStr == "" {
 		limitStr = "20"
 	}
@@ -94,7 +101,6 @@ func (e *entryController) List(c Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "Limit must be a number"})
 	}
 
-	offsetStr := query.Get("offset")
 	if offsetStr == "" {
 		offsetStr = "0"
 	}
@@ -104,22 +110,10 @@ func (e *entryController) List(c Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "Offset must be a number"})
 	}
 
-	list, err := e.EntryInteractor.List(q, limit, offset, query.Get("orderBy"), query.Get("order"))
+	list, err := e.EntryInteractor.List(filteredQueryParams, limit, offset, orderBy, order)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
 	}
 
 	return c.JSON(http.StatusOK, list)
-}
-
-func (e *entryController) SetLatest(c Context) error {
-	entry_id := c.Param("id")
-	version_id := c.Param("version_id")
-
-	err := e.EntryInteractor.SetLatest(entry_id, version_id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
-	}
-
-	return c.NoContent(http.StatusNoContent)
 }
