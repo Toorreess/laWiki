@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"firebase.google.com/go/v4/storage"
+	"github.com/Toorreess/laWiki/entry-service/internal/model"
 	"github.com/labstack/echo/v4"
 )
 
@@ -54,9 +55,17 @@ func (e *entryController) Create(c Context, storageClient *storage.Client) error
 }
 
 func (e *entryController) Get(c Context) error {
-	panic("unimplemented")
+	var em *model.Entry
+
+	em, err := e.EntryInteractor.Get(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	return c.JSON(http.StatusOK, em)
 }
 
+// TODO
 func (e *entryController) Update(c Context, body map[string]interface{}) error {
 	return c.JSON(http.StatusOK, nil)
 }

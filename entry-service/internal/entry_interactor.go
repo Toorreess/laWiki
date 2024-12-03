@@ -28,9 +28,13 @@ func NewEntryInteractor(r IEntryRepository, p IEntryPresenter) IEntryInteractor 
 }
 
 func (ei *entryInteractor) Create(entryData map[string]string, file multipart.File, storageClient *storage.Client) (*model.Entry, error) {
-	var em *model.Entry
+	em := model.Entry{
+		Name:   entryData["name"],
+		Author: entryData["author"],
+		WikiID: entryData["wiki_id"],
+	}
 
-	result, err := ei.EntryRepository.Create(em)
+	result, err := ei.EntryRepository.Create(&em)
 	if err != nil {
 		return nil, err
 	}
