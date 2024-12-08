@@ -16,6 +16,8 @@ type IUserController interface {
 	Update(c Context, body map[string]interface{}) error
 	Delete(c Context) error
 	List(c Context) error
+
+	UpdateReputation(c Context) error
 }
 
 type userController struct {
@@ -120,4 +122,38 @@ func (uc *userController) List(c Context) error {
 	}
 
 	return c.JSON(http.StatusOK, list)
+}
+
+func (uc *userController) UpdateReputation(c Context) error {
+	userID := c.Param("id")
+	if userID == "" {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	um, err := uc.UserInteractor.Get(userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	var rating model.Rating
+	if err := c.Bind(&rating); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
+	}
+
+	totalScore := um.Reputation * float64(um.RatingCount)
+	newTotalScore := totalScore + rating.Score
+	newRatingCount := um.RatingCount + 1
+
+	newReputation := newTotalScore / float64(newRatingCount)
+
+	um, err = uc.UserInteractor.Update(userID, map[string]interface{}{
+		"reputation":   newReputation,
+		"rating_count": newRatingCount,
+	})
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "Could not update user's rating"})
+	}
+
+	return c.JSON(http.StatusOK, um)
 }

@@ -98,7 +98,7 @@ func (c Client) Update(index, id string, updates map[string]interface{}) (map[st
 	var fsUpdates []firestore.Update
 	for k, v := range updates {
 		fsUpdates = append(fsUpdates, firestore.Update{
-			Path: k, Value: v, // TODO: Revisar
+			Path: k, Value: v,
 		})
 	}
 

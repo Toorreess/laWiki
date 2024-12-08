@@ -2,6 +2,6 @@ database:
   dbtype: "firestore"
 
 server:
-  port: ":8081"
+  port: ":8084"
 
 projectID: "lawiki-89989"

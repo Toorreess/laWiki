@@ -38,5 +38,9 @@ func NewRouter(e *echo.Echo, uc IUserController) *echo.Echo {
 		return uc.List(c)
 	})
 
+	api.PUT("/users/:id/reputation", func(c echo.Context) error {
+		return uc.UpdateReputation(c)
+	})
+
 	return e
 }
