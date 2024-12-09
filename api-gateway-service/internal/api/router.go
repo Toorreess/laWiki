@@ -10,54 +10,83 @@ func NewRouter(e *echo.Echo) *echo.Echo {
 	v1 := api.Group("/v1")
 
 	/* Wiki microservice endpoints */
-	v1.POST("/wiki", func(c echo.Context) error {
+	v1.POST("/wikis", func(c echo.Context) error {
 		return handlers.CreateWiki(c)
 	})
-	v1.GET("/wiki/:id", func(c echo.Context) error {
+	v1.GET("/wikis/:id", func(c echo.Context) error {
 		return handlers.GetWiki(c)
 	})
-	v1.PUT("/wiki/:id", func(c echo.Context) error {
+	v1.PUT("/wikis/:id", func(c echo.Context) error {
 		return handlers.UpdateWiki(c)
 	})
-	v1.DELETE("/wiki/:id", func(c echo.Context) error {
+	v1.DELETE("/wikis/:id", func(c echo.Context) error {
 		return handlers.DeleteWiki(c)
 	})
-	v1.GET("/wiki", func(c echo.Context) error {
+	v1.GET("/wikis", func(c echo.Context) error {
 		return handlers.ListWiki(c)
 	})
 
 	/* Entry microservice endpoints */
-	v1.POST("/wiki/:wiki_id/entry", func(c echo.Context) error {
+	v1.POST("/wikis/:wiki_id/entries", func(c echo.Context) error {
 		return handlers.CreateEntry(c)
 	})
-	v1.GET("/entry/:id", func(c echo.Context) error {
+	v1.GET("/entries/:id", func(c echo.Context) error {
 		return handlers.GetEntry(c)
 	})
-	v1.PUT("/entry/:id", func(c echo.Context) error {
+	v1.PUT("/entries/:id", func(c echo.Context) error {
 		return handlers.UpdateEntry(c)
 	})
-	v1.DELETE("/entry/:id", func(c echo.Context) error {
+	v1.DELETE("/entries/:id", func(c echo.Context) error {
 		return handlers.DeleteEntry(c)
 	})
-	v1.GET("/entry", func(c echo.Context) error {
+	v1.GET("/entries", func(c echo.Context) error {
 		return handlers.ListEntry(c)
 	})
 
 	/* Comment microservice endpoints */
-	v1.POST("/entry/:entry_id/comment", func(c echo.Context) error {
+	v1.POST("/entries/:entry_id/comments", func(c echo.Context) error {
 		return handlers.CreateComment(c)
 	})
-	v1.GET("/comment/:id", func(c echo.Context) error {
+	v1.GET("/comments/:id", func(c echo.Context) error {
 		return handlers.GetComment(c)
 	})
-	v1.PUT("/comment/:id", func(c echo.Context) error {
+	v1.PUT("/comments/:id", func(c echo.Context) error {
 		return handlers.UpdateComment(c)
 	})
-	v1.DELETE("/comment/:id", func(c echo.Context) error {
+	v1.DELETE("/comments/:id", func(c echo.Context) error {
 		return handlers.DeleteComment(c)
 	})
-	v1.GET("/comment", func(c echo.Context) error {
+	v1.GET("/comments", func(c echo.Context) error {
 		return handlers.ListComment(c)
+	})
+
+	/* User microservice endpoints */
+	v1.POST("/users", func(c echo.Context) error {
+		return handlers.CreateUser(c)
+	})
+	v1.GET("/users/:id", func(c echo.Context) error {
+		return handlers.GetUser(c)
+	})
+	v1.PUT("/users/:id", func(c echo.Context) error {
+		return handlers.UpdateUser(c)
+	})
+	v1.DELETE("/users/:id", func(c echo.Context) error {
+		return handlers.DeleteUser(c)
+	})
+	v1.GET("/users", func(c echo.Context) error {
+		return handlers.ListUser(c)
+	})
+
+	v1.GET("/users/:id/notifications", func(c echo.Context) error {
+		return handlers.GetNotifications(c)
+	})
+
+	v1.POST("/users/:id/notifications", func(c echo.Context) error {
+		return handlers.AddNotification(c)
+	})
+
+	v1.PUT("/users/:user_id/notifications/:notification_id", func(c echo.Context) error {
+		return handlers.ReadNotification(c)
 	})
 
 	return e

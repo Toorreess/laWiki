@@ -40,5 +40,9 @@ func NewRouter(e *echo.Echo, ic IEntryController, storageClient *storage.Client)
 		return ic.List(c)
 	})
 
+	api.POST("/entry/:id/set-latest/:version_id", func(c echo.Context) error {
+		return ic.SetLatest(c)
+	})
+
 	return e
 }

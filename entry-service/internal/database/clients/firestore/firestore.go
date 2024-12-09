@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 
 	"cloud.google.com/go/firestore"
+	"github.com/Toorreess/laWiki/entry-service/internal/model"
 	"google.golang.org/api/iterator"
 )
 
@@ -50,6 +51,17 @@ func (c Client) Create(index string, entity interface{}) (map[string]interface{}
 		result["modification_date"] = wr.UpdateTime
 	}
 
+	entryVersion := model.Version{
+		Author:  result["author"].(string),
+		Latest:  true,
+		Deleted: false,
+		Content: entity.(*model.Entry).Content,
+	}
+
+	doc, _, err = doc.Collection("VCS").Add(c.Ctx, entryVersion)
+	if err != nil {
+		return nil, err
+	}
 	return result, nil
 }
 
@@ -98,7 +110,7 @@ func (c Client) Update(index, id string, updates map[string]interface{}) (map[st
 	var fsUpdates []firestore.Update
 	for k, v := range updates {
 		fsUpdates = append(fsUpdates, firestore.Update{
-			Path: k, Value: v, // TODO: Revisar
+			Path: k, Value: v,
 		})
 	}
 
@@ -138,7 +150,7 @@ func (c Client) List(index string, query map[string]string, limit, offset int, o
 	for k, v := range query {
 		if v != "" {
 			// q = q.Where(k, "==", v)
-			q = q.StartAt(v).EndAt(k + `\uf8ff`) // TODO: Revisar
+			q = q.StartAt(v).EndAt(k + `\uf8ff`)
 		}
 	}
 
@@ -189,4 +201,24 @@ func (c Client) Close() error {
 		return fmt.Errorf("no client found")
 	}
 	return c.Storage.Close()
+}
+
+func (c Client) SetLatest(index, entry_id, version_id string) error {
+	entry, err := c.Get(index, entry_id)
+	if err != nil {
+		return err
+	}
+
+	latestVersion := entry["latest_version"].(string)
+	doc := c.Storage.Collection(index).Doc(entry_id).Collection("VCS").Doc(latestVersion)
+	if _, err := doc.Update(c.Ctx, []firestore.Update{{Path: "latest", Value: false}}); err != nil {
+		return err
+	}
+
+	doc = c.Storage.Collection(index).Doc(entry_id).Collection("VCS").Doc(version_id)
+	if _, err := doc.Update(c.Ctx, []firestore.Update{{Path: "latest", Value: true}}); err != nil {
+		return err
+	}
+
+	return nil
 }

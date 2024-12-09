@@ -20,6 +20,8 @@ type DBClient interface {
 	Delete(index, id string) error
 	List(index string, query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
 	Close() error
+
+	SetLatest(index, entry_id, version_id string) error
 }
 
 func NewDBClient(dbType, projectID string) (*Connection, error) {
@@ -75,4 +77,11 @@ func (conn *Connection) List(index string, query map[string]string, limit, offse
 
 func (conn *Connection) Close() error {
 	return conn.Client.(DBClient).Close()
+}
+
+func (conn *Connection) SetLatest(index, entry_id, version_id string) error {
+	if conn.Client == nil {
+		return fmt.Errorf("no client found. Please, init Connection before.")
+	}
+	return conn.Client.(DBClient).SetLatest(index, entry_id, version_id)
 }

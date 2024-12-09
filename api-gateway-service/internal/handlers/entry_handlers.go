@@ -14,7 +14,7 @@ import (
 )
 
 var entryPort = config.ReadConfig().Server.EntryPort
-var ENTRY_SERVICE_HOST = fmt.Sprintf("http://entry-service%s/api/entry", entryPort)
+var ENTRY_SERVICE_HOST = fmt.Sprintf("http://entry-service%s/api/entries", entryPort)
 
 func CreateEntry(c Context) error {
 	var payload *models.Entry

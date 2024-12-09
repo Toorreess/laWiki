@@ -42,5 +42,13 @@ func NewRouter(e *echo.Echo, uc IUserController) *echo.Echo {
 		return uc.UpdateReputation(c)
 	})
 
+	api.POST("users/:id/notifications", func(c echo.Context) error {
+		return uc.AddNotification(c)
+	})
+
+	api.PUT("users/:id/notifications/:notification_id", func(c echo.Context) error {
+		return uc.ReadNotification(c)
+	})
+
 	return e
 }

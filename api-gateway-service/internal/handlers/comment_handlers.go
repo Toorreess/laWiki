@@ -13,7 +13,7 @@ import (
 )
 
 var commentPort = config.ReadConfig().Server.CommentPort
-var COMMENT_SERVICE_HOST = fmt.Sprintf("http://comment-service%s/api/comment", commentPort)
+var COMMENT_SERVICE_HOST = fmt.Sprintf("http://comment-service%s/api/comments", commentPort)
 
 func CreateComment(c Context) error {
 	var payload *models.Comment

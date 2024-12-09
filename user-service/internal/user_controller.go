@@ -18,6 +18,9 @@ type IUserController interface {
 	List(c Context) error
 
 	UpdateReputation(c Context) error
+
+	AddNotification(c Context) error
+	ReadNotification(c Context) error
 }
 
 type userController struct {
@@ -156,4 +159,24 @@ func (uc *userController) UpdateReputation(c Context) error {
 	}
 
 	return c.JSON(http.StatusOK, um)
+}
+
+func (uc *userController) AddNotification(c Context) error {
+	var notification *model.Notification
+	if err := c.Bind(&notification); err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	if err := uc.UserInteractor.AddNotification(c.Param("id"), notification); err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	return c.JSON(http.StatusOK, notification)
+}
+
+func (uc *userController) ReadNotification(c Context) error {
+	if err := uc.UserInteractor.ReadNotification(c.Param("id"), c.Param("notification_id")); err != nil {
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
 }

@@ -16,8 +16,9 @@ type IEntryController interface {
 	Get(c Context) error
 	Update(c Context, body map[string]interface{}) error
 	Delete(c Context) error
-
 	List(c Context) error
+
+	SetLatest(c Context) error
 }
 
 type entryController struct {
@@ -29,29 +30,17 @@ func NewEntryController(ei IEntryInteractor) IEntryController {
 }
 
 func (e *entryController) Create(c Context, storageClient *storage.Client) error {
-	r := c.Request()
-
-	r.ParseMultipartForm(10 << 20) // 10 MB limit
-
-	entryData := map[string]string{
-		"name":    r.FormValue("name"),
-		"author":  r.FormValue("author"),
-		"wiki_id": r.FormValue("wiki_id"),
+	var em *model.Entry
+	if err := c.Bind(&em); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
 	}
 
-	file, _, err := r.FormFile("content")
+	em, err := e.EntryInteractor.Create(em)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "File uploaded invalid"})
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, map[string]string{"status": "Not valid body"})
 	}
 
-	defer file.Close()
-
-	resp, err := e.EntryInteractor.Create(entryData, file, storageClient)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "File uploaded invalid"})
-	}
-
-	return c.JSON(http.StatusCreated, resp)
+	return c.JSON(http.StatusCreated, em)
 }
 
 func (e *entryController) Get(c Context) error {
@@ -65,7 +54,6 @@ func (e *entryController) Get(c Context) error {
 	return c.JSON(http.StatusOK, em)
 }
 
-// TODO
 func (e *entryController) Update(c Context, body map[string]interface{}) error {
 	return c.JSON(http.StatusOK, nil)
 }
@@ -125,4 +113,16 @@ func (e *entryController) List(c Context) error {
 	}
 
 	return c.JSON(http.StatusOK, list)
+}
+
+func (e *entryController) SetLatest(c Context) error {
+	entry_id := c.Param("id")
+	version_id := c.Param("version_id")
+
+	err := e.EntryInteractor.SetLatest(entry_id, version_id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
