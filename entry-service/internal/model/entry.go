@@ -9,6 +9,13 @@ type Entry struct {
 	WikiID        string `json:"wiki_id" firestore:"wiki_id" binding:"required"`
 	LatestVersion string `json:"latest_version" firestore:"latest_version" binding:"required"`
 	Content       string `json:"content" firestore:"-"`
+	
+	ImageURL string `json:"image_url" firestore:"image_url"`
+
+	Location struct{
+		Latitude Float64 `json:"latitude" firestore:"latitude"`
+		Longitude Float64 `json:"longitude" firestore:"longitude"` 
+	} `json:"location" firestore:"location"`
 
 	// Deleted is used for logical deletion
 	Deleted bool `json:"-" firestore:"deleted"`
