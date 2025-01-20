@@ -8,6 +8,7 @@ type Wiki struct {
 	Creator     string `json:"creator" firestore:"creator" binding:"required"`
 	Description string `json:"description" firestore:"description" updateAllowed:"true"`
 
+	ImageURL string `json:"image_url" firestore:"image_url" updateAllowed:"true"`
 	// Deleted is used for logical deletion
 	Deleted bool `json:"-" firestore:"deleted"`
 
