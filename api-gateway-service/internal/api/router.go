@@ -9,6 +9,14 @@ func NewRouter(e *echo.Echo) *echo.Echo {
 	api := e.Group("/api")
 	v1 := api.Group("/v1")
 
+	v1.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+		ExposeHeaders:    []string{"*"},
+	}))
+
 	/* Wiki microservice endpoints */
 	v1.POST("/wikis", func(c echo.Context) error {
 		return handlers.CreateWiki(c)
