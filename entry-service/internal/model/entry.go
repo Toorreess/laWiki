@@ -13,8 +13,8 @@ type Entry struct {
 	ImageURL string `json:"image_url" firestore:"image_url"`
 
 	Location struct{
-		Latitude Float64 `json:"latitude" firestore:"latitude"`
-		Longitude Float64 `json:"longitude" firestore:"longitude"` 
+		Latitude float64 `json:"latitude" firestore:"latitude"`
+		Longitude float64 `json:"longitude" firestore:"longitude"` 
 	} `json:"location" firestore:"location"`
 
 	// Deleted is used for logical deletion
