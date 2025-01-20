@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/Toorreess/laWiki/api-gateway-service/internal/handlers"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func NewRouter(e *echo.Echo) *echo.Echo {
