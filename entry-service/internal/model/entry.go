@@ -8,7 +8,7 @@ type Entry struct {
 	Author        string `json:"author" firestore:"author" binding:"required"`
 	WikiID        string `json:"wiki_id" firestore:"wiki_id" binding:"required"`
 	LatestVersion string `json:"latest_version" firestore:"latest_version" binding:"required"`
-	Content       string `json:"content" firestore:"-"`
+	Content       string `json:"content" firestore:"content"`
 	
 	ImageURL string `json:"image_url" firestore:"image_url"`
 
