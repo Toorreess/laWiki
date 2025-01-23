@@ -3,9 +3,11 @@ package internal
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"firebase.google.com/go/v4/storage"
 )
 
-func NewRouter(e *echo.Echo, ic IEntryController) *echo.Echo {
+func NewRouter(e *echo.Echo, ic IEntryController, storageClient *storage.Client) *echo.Echo {
 	api := e.Group("/api")
 
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -16,25 +18,25 @@ func NewRouter(e *echo.Echo, ic IEntryController) *echo.Echo {
 		ExposeHeaders:    []string{"*"},
 	}))
 
-	api.GET("/entry/:id", func(c echo.Context) error {
+	api.GET("/entries/:id", func(c echo.Context) error {
 		return ic.Get(c)
 	})
 
-	api.POST("/entry", func(c echo.Context) error {
-		return ic.Create(c)
+	api.POST("/entries", func(c echo.Context) error {
+		return ic.Create(c, storageClient)
 	})
 
-	api.PUT("/entry/:id", func(c echo.Context) error {
+	api.PUT("/entries/:id", func(c echo.Context) error {
 		obj := make(map[string]interface{})
 		c.Bind(&obj)
 		return ic.Update(c, obj)
 	})
 
-	api.DELETE("/entry/:id", func(c echo.Context) error {
+	api.DELETE("/entries/:id", func(c echo.Context) error {
 		return ic.Delete(c)
 	})
 
-	api.GET("/entry", func(c echo.Context) error {
+	api.GET("/entries", func(c echo.Context) error {
 		return ic.List(c)
 	})
 

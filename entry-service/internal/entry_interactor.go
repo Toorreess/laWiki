@@ -27,6 +27,7 @@ func NewEntryInteractor(r IEntryRepository, p IEntryPresenter) IEntryInteractor 
 }
 
 func (ei *entryInteractor) Create(em *model.Entry) (*model.Entry, error) {
+
 	result, err := ei.EntryRepository.Create(em)
 	if err != nil {
 		return nil, err

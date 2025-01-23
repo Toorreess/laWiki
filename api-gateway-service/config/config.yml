@@ -3,6 +3,7 @@ server:
   wikiPort: ":8081"
   entryPort: ":8082"
   commentPort: ":8083"
+  userPort: ":8084"
 
 projectID: "lawiki-89989"
 

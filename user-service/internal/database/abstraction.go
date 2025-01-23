@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Toorreess/laWiki/wiki-service/internal/database/clients/firestore"
+	"github.com/Toorreess/laWiki/user-service/internal/database/clients/firestore"
 )
 
 type Connection struct {

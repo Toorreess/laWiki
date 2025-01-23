@@ -14,6 +14,7 @@ type Config struct {
 		WikiPort    string
 		EntryPort   string
 		CommentPort string
+		UserPort    string
 	}
 
 	ProjectID string `yml:"project_id"`

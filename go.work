@@ -5,4 +5,5 @@ use (
 	./api-gateway-service
 	./wiki-service
 	./comment-service
+	./user-service
 )

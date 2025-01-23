@@ -15,7 +15,6 @@ type IWikiController interface {
 	Get(c Context) error
 	Update(c Context, body map[string]interface{}) error
 	Delete(c Context) error
-
 	List(c Context) error
 }
 
@@ -56,6 +55,10 @@ func (w *wikiController) Get(c Context) error {
 func (w *wikiController) Update(c Context, body map[string]interface{}) error {
 	var wm *model.Wiki
 
+	if _, ok := body["id"]; ok {
+		delete(body, "id")
+	}
+
 	wm, err := w.WikiInteractor.Update(c.Param("id"), body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
@@ -65,27 +68,34 @@ func (w *wikiController) Update(c Context, body map[string]interface{}) error {
 }
 
 func (w *wikiController) Delete(c Context) error {
-	err := w.WikiInteractor.Delete(c.Param("id"))
-
-	if err != nil {
+	if err := w.WikiInteractor.Delete(c.Param("id")); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
 	}
 
 	return c.NoContent(http.StatusNoContent)
 }
 
-// TODO: No se muestra las entidades correctamente
 func (w *wikiController) List(c Context) error {
 	query := c.QueryParams()
 
-	q := make(map[string]string)
+	var limitStr, offsetStr, orderBy, order string
+
+	filteredQueryParams := make(map[string]string)
 	for k, v := range query {
-		if k != "limit" && k != "offset" && k != "orderBy" && k != "order" {
-			q[k] = v[0]
+		switch k {
+		case "limit":
+			limitStr = v[0]
+		case "offset":
+			offsetStr = v[0]
+		case "orderBy":
+			orderBy = v[0]
+		case "order":
+			order = v[0]
+		default:
+			filteredQueryParams[k] = v[0]
 		}
 	}
 
-	limitStr := query.Get("limit")
 	if limitStr == "" {
 		limitStr = "20"
 	}
@@ -95,7 +105,6 @@ func (w *wikiController) List(c Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "Limit must be a number"})
 	}
 
-	offsetStr := query.Get("offset")
 	if offsetStr == "" {
 		offsetStr = "0"
 	}
@@ -105,7 +114,7 @@ func (w *wikiController) List(c Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{"status": "Offset must be a number"})
 	}
 
-	list, err := w.WikiInteractor.List(q, limit, offset, query.Get("orderBy"), query.Get("order"))
+	list, err := w.WikiInteractor.List(filteredQueryParams, limit, offset, orderBy, order)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, map[string]string{"status": "Not found"})
 	}

@@ -14,11 +14,11 @@ type Connection struct {
 }
 
 type DBClient interface {
-	Get(index, id string, entity interface{}) (map[string]interface{}, error)
 	Create(index string, entity interface{}) (map[string]interface{}, error)
-	Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error)
+	Get(index, id string) (map[string]interface{}, error)
+	Update(index, id string, updates map[string]interface{}) (map[string]interface{}, error)
 	Delete(index, id string) error
-	List(index string, query map[string]string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error)
+	List(index string, query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error)
 	Close() error
 
 	SetLatest(index, entry_id, version_id string) error
@@ -40,10 +40,6 @@ func NewDBClient(dbType, projectID string) (*Connection, error) {
 	return &conn, nil
 }
 
-func (conn *Connection) Close() error {
-	return conn.Client.(DBClient).Close()
-}
-
 func (conn *Connection) Create(index string, entity interface{}) (map[string]interface{}, error) {
 	if conn.Client == nil {
 		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
@@ -51,18 +47,18 @@ func (conn *Connection) Create(index string, entity interface{}) (map[string]int
 	return conn.Client.(DBClient).Create(index, entity)
 }
 
-func (conn *Connection) Get(index string, id string, entity interface{}) (map[string]interface{}, error) {
+func (conn *Connection) Get(index string, id string) (map[string]interface{}, error) {
 	if conn.Client == nil {
 		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
 	}
-	return conn.Client.(DBClient).Get(index, id, entity)
+	return conn.Client.(DBClient).Get(index, id)
 }
 
-func (conn *Connection) Update(index, id string, entity interface{}, updates map[string]interface{}) (map[string]interface{}, error) {
+func (conn *Connection) Update(index, id string, updates map[string]interface{}) (map[string]interface{}, error) {
 	if conn.Client == nil {
 		return make(map[string]interface{}), fmt.Errorf("no client found. Please, init Connection before.")
 	}
-	return conn.Client.(DBClient).Update(index, id, entity, updates)
+	return conn.Client.(DBClient).Update(index, id, updates)
 }
 
 func (conn *Connection) Delete(index, id string) error {
@@ -72,11 +68,15 @@ func (conn *Connection) Delete(index, id string) error {
 	return conn.Client.(DBClient).Delete(index, id)
 }
 
-func (conn *Connection) List(index string, query map[string]string, limit, offset int, orderBy, order string, entity interface{}) ([]map[string]interface{}, error) {
+func (conn *Connection) List(index string, query map[string]string, limit, offset int, orderBy, order string) ([]map[string]interface{}, error) {
 	if conn.Client == nil {
 		return nil, fmt.Errorf("no client found. Please, init Connection before.")
 	}
-	return conn.Client.(DBClient).List(index, query, limit, offset, orderBy, order, entity)
+	return conn.Client.(DBClient).List(index, query, limit, offset, orderBy, order)
+}
+
+func (conn *Connection) Close() error {
+	return conn.Client.(DBClient).Close()
 }
 
 func (conn *Connection) SetLatest(index, entry_id, version_id string) error {
